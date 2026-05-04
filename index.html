@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ITI Vidya - Learning Platform</title>
+
+    <!-- React, ReactDOM, and Babel for in-browser compilation -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* iOS 26 Inspired Theme */
+        :root {
+            --apple-bg: #000000;
+            --apple-card: #1C1C1E;
+            --apple-glass: rgba(28, 28, 30, 0.75);
+            --apple-text: #FFFFFF;
+            --apple-subtext: rgba(235, 235, 245, 0.6);
+            --apple-accent: #FF9F0A; /* iOS Orange */
+            --apple-green: #32D74B;
+            --apple-red: #FF453A;
+            --apple-blue: #0A84FF;
+        }
+
+        body {
+            background-color: var(--apple-bg);
+            color: var(--apple-text);
+            /* San Francisco System Font */
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji";
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+            overflow: hidden;
+        }
+
+        * { box-sizing: border-box; }
+
+        /* Custom Scrollbar for iOS feel */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
+
+        .ios-glass {
+            background: var(--apple-glass);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .ios-card {
+            background: var(--apple-card);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.2s ease;
+        }
+
+        .ios-btn-primary {
+            background: var(--apple-accent);
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .ios-btn-primary:active { opacity: 0.7; }
+        .ios-btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .ios-btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--apple-text);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .ios-btn-secondary:active { background: rgba(255, 255, 255, 0.15); }
+
+        .nav-item {
+            display: flex; align-items: center; gap: 12px; padding: 12px 16px; 
+            border-radius: 14px; cursor: pointer; font-size: 15px; font-weight: 500; 
+            transition: all 0.2s; color: var(--apple-subtext);
+        }
+        .nav-item.active { background: rgba(255, 159, 10, 0.15); color: var(--apple-accent); font-weight: 600; }
+
+        .input-field {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px; padding: 12px 16px; color: var(--apple-text); font-size: 15px;
+            width: 100%; outline: none; transition: border 0.2s;
+        }
+        .input-field:focus { border-color: var(--apple-accent); }
+
+        .lesson-item {
+            background: var(--apple-card); border-radius: 16px; padding: 16px;
+            cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 14px;
+        }
+        .lesson-item:active { transform: scale(0.98); }
+
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.05); border: 2px solid transparent; 
+            border-radius: 16px; padding: 16px 20px; cursor: pointer; transition: all 0.2s; font-size: 16px;
+        }
+        .quiz-option.selected { border-color: var(--apple-accent); background: rgba(255, 159, 10, 0.1); }
+        
+        .progress-bar-wrap { background: rgba(255, 255, 255, 0.1); border-radius: 100px; height: 8px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; border-radius: 100px; background: var(--apple-accent); transition: width 0.5s ease; }
+
+        .notification-pill {
+            position: fixed; top: 40px; left: 50%; transform: translateX(-50%);
+            z-index: 9999; padding: 12px 24px; border-radius: 30px; font-size: 14px; 
+            font-weight: 600; animation: dropDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        @keyframes dropDown { from { transform: translate(-50%, -40px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel" data-type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getDatabase, ref, onValue, set, update } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+
+        // === USER'S FIREBASE CONFIGURATION ===
+        const firebaseConfig = { 
+            apiKey: "AIzaSyBY0nqRGsqMMDFTENPoT3es5NQZpUTGRe0", 
+            authDomain: "energy-meter-data-37caf.firebaseapp.com", 
+            databaseURL: "https://energy-meter-data-37caf-default-rtdb.firebaseio.com", 
+            projectId: "energy-meter-data-37caf", 
+            storageBucket: "energy-meter-data-37caf.firebasestorage.app", 
+            messagingSenderId: "525817374062", 
+            appId: "1:525817374062:web:c815bdd169e60c1c98cd7f" 
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        const { useState, useEffect, useRef, useCallback } = React;
+
+        const TRADES = [
+            { id: "electrician", name: "Electrician", icon: "⚡", color: "#FF9F0A", lessons: 12, enrolled: 234 },
+            { id: "fitter", name: "Fitter", icon: "🔧", color: "#0A84FF", lessons: 15, enrolled: 189 },
+            { id: "welder", name: "Welder", icon: "🔥", color: "#FF453A", lessons: 10, enrolled: 156 },
+            { id: "turner", name: "Turner", icon: "⚙️", color: "#BF5AF2", lessons: 11, enrolled: 142 },
+            { id: "copa", name: "COPA", icon: "💻", color: "#32D74B", lessons: 18, enrolled: 267 },
+            { id: "plumber", name: "Plumber", icon: "🔩", color: "#64D2FF", lessons: 9, enrolled: 98 },
+        ];
+
+        const INITIAL_LESSONS = {
+            electrician: [
+                { id: "e1", title: "Basic Electrical Theory", type: "video", duration: "45 min", content: "https://www.youtube.com/embed/mc979OhitAg", description: "Ohm's Law, voltage, current, resistance fundamentals." },
+                { id: "e2", title: "Safety Standards Manual", type: "pdf", duration: "30 min", content: "https://www.africau.edu/images/default/sample.pdf", description: "IS:732 electrical safety guidelines for ITI students." },
+                { id: "e4", title: "AC/DC Circuits", type: "video", duration: "55 min", content: "https://www.youtube.com/embed/X4EITSQSPkk", description: "Series and parallel circuits explained with examples." },
+            ],
+            copa: [
+                { id: "c1", title: "Operating System Basics", type: "video", duration: "45 min", content: "https://www.youtube.com/embed/26QPDBe-NB8", description: "Windows and Linux OS fundamentals for beginners." },
+            ]
+        };
+
+        const QUIZZES = {
+            electrician: [
+                {
+                    id: "eq1", title: "Basic Electrical Theory", lessonId: "e1", timeLimit: 600,
+                    questions: [
+                        { id: 1, q: "Ohm's Law states that V = ?", options: ["I × R", "I / R", "I + R", "I - R"], answer: 0, explanation: "Voltage = Current × Resistance (V = I × R)" },
+                        { id: 2, q: "The unit of electrical resistance is:", options: ["Ampere", "Volt", "Ohm", "Watt"], answer: 2, explanation: "Resistance is measured in Ohms (Ω), named after Georg Ohm." },
+                    ]
+                }
+            ]
+        };
+
+        const formatTime = (seconds) => {
+            const m = Math.floor(seconds / 60).toString().padStart(2, "0");
+            const s = (seconds % 60).toString().padStart(2, "0");
+            return `${m}:${s}`;
+        };
+
+        function App() {
+            const [user, setUser] = useState(null);
+            const [activeView, setActiveView] = useState("dashboard");
+            const [selectedTrade, setSelectedTrade] = useState(null);
+            const [selectedLesson, setSelectedLesson] = useState(null);
+            const [activeQuiz, setActiveQuiz] = useState(null);
+            const [quizState, setQuizState] = useState(null);
+            const [quizResult, setQuizResult] = useState(null);
+            const [progress, setProgress] = useState({});
+            const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 768);
+            const [notification, setNotification] = useState(null);
+            const timerRef = useRef(null);
+
+            // Responsive sidebar
+            useEffect(() => {
+                const handleResize = () => setSidebarOpen(window.innerWidth > 768);
+                window.addEventListener('resize', handleResize);
+                return () => window.removeEventListener('resize', handleResize);
+            }, []);
+
+            // Fallback: Load from local storage initially
+            useEffect(() => {
+                const saved = localStorage.getItem("iti_progress");
+                if (saved) setProgress(JSON.parse(saved));
+            }, []);
+
+            // Firebase Auth & Data Sync
+            useEffect(() => {
+                const initAuth = async () => {
+                    try {
+                        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                            await signInWithCustomToken(auth, __initial_auth_token);
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                    } catch (error) {
+                        console.error("Firebase Auth Error", error);
+                        if (error.code === 'auth/admin-restricted-operation') {
+                            showNotification("Firebase Auth disabled. Using local storage.", "error");
+                        }
+                    }
+                };
+                initAuth();
+
+                const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+                    setUser(currentUser);
+                    if (currentUser) {
+                        // Load progress from Realtime Database
+                        const progressRef = ref(db, `users/${currentUser.uid}/progress`);
+                        onValue(progressRef, (snapshot) => {
+                            const data = snapshot.val();
+                            if (data) setProgress(data);
+                        });
+                    }
+                });
+                return () => unsubscribe();
+            }, []);
+
+            const showNotification = useCallback((msg, type = "success") => {
+                setNotification({ msg, type });
+                setTimeout(() => setNotification(null), 3000);
+            }, []);
+
+            const markComplete = (tradeId, lessonId) => {
+                const updated = { ...progress, [`${tradeId}_${lessonId}`]: true };
+                setProgress(updated);
+                showNotification("Lesson marked as complete!");
+                
+                // Save to Firebase if authenticated, otherwise use Local Storage
+                if (user) {
+                    set(ref(db, `users/${user.uid}/progress`), updated).catch(console.error);
+                } else {
+                    localStorage.setItem("iti_progress", JSON.stringify(updated));
+                }
+            };
+
+            // Quiz Timer Logic
+            useEffect(() => {
+                if (quizState?.running) {
+                    timerRef.current = setInterval(() => {
+                        setQuizState(prev => {
+                            if (!prev || prev.timeLeft <= 1) {
+                                clearInterval(timerRef.current);
+                                finishQuiz(prev);
+                                return { ...prev, running: false, timeLeft: 0 };
+                            }
+                            return { ...prev, timeLeft: prev.timeLeft - 1 };
+                        });
+                    }, 1000);
+                }
+                return () => clearInterval(timerRef.current);
+            }, [quizState?.running]);
+
+            const startQuiz = (quiz) => {
+                setActiveQuiz(quiz);
+                setQuizResult(null);
+                setQuizState({ currentQ: 0, answers: Array(quiz.questions.length).fill(null), timeLeft: quiz.timeLimit, running: true });
+            };
+
+            const answerQuestion = (optionIndex) => {
+                setQuizState(prev => {
+                    const newAnswers = [...prev.answers];
+                    newAnswers[prev.currentQ] = optionIndex;
+                    return { ...prev, answers: newAnswers };
+                });
+            };
+
+            const nextQuestion = () => {
+                setQuizState(prev => {
+                    const isLast = prev.currentQ === activeQuiz.questions.length - 1;
+                    if (isLast) {
+                        clearInterval(timerRef.current);
+                        const result = calcResult({ ...prev });
+                        setQuizResult(result);
+                        return { ...prev, running: false };
+                    }
+                    return { ...prev, currentQ: prev.currentQ + 1 };
+                });
+            };
+
+            const calcResult = (state) => {
+                let correct = 0;
+                activeQuiz.questions.forEach((q, i) => {
+                    if (state.answers[i] === q.answer) correct++;
+                });
+                return { correct, total: activeQuiz.questions.length, percentage: Math.round((correct / activeQuiz.questions.length) * 100) };
+            };
+
+            const finishQuiz = (state) => {
+                if (!state || !activeQuiz) return;
+                const result = calcResult(state);
+                setQuizResult(result);
+            };
+
+            const NAV = [
+                { id: "dashboard", label: "Dashboard", icon: "􀏜" }, // SF Symbols equivalents
+                { id: "subjects", label: "Subjects", icon: "􀉚" },
+                { id: "quiz", label: "Tests & Quizzes", icon: "􀈸" },
+                { id: "progress", label: "My Progress", icon: "􀀿" },
+            ];
+
+            return (
+                <div style={{ display: "flex", height: "100vh", background: "var(--apple-bg)", color: "var(--apple-text)", overflow: "hidden" }}>
+                    
+                    {notification && (
+                        <div className="notification-pill ios-glass" style={{ color: notification.type === "error" ? "var(--apple-red)" : "var(--apple-green)" }}>
+                            {notification.msg}
+                        </div>
+                    )}
+
+                    {/* Sidebar / Bottom Navigation for Mobile */}
+                    <div className="ios-glass" style={{ 
+                        width: sidebarOpen ? 240 : 80, 
+                        borderRight: "1px solid rgba(255,255,255,0.05)", 
+                        display: "flex", flexDirection: "column", 
+                        transition: "width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)", 
+                        zIndex: 10
+                    }}>
+                        <div style={{ padding: "24px 20px", display: "flex", alignItems: "center", gap: 14, cursor: "pointer" }} onClick={() => setSidebarOpen(!sidebarOpen)}>
+                            <div style={{ width: 38, height: 38, background: "var(--apple-accent)", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>🎓</div>
+                            {sidebarOpen && <div><div style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.5px" }}>ITI Vidya</div><div style={{ fontSize: 12, color: "var(--apple-subtext)" }}>Learning Portal</div></div>}
+                        </div>
+                        
+                        <nav style={{ padding: "10px 12px", flex: 1, display: "flex", flexDirection: "column", gap: "6px" }}>
+                            {NAV.map(n => (
+                                <div key={n.id} className={`nav-item ${activeView === n.id ? "active" : ""}`} onClick={() => { setActiveView(n.id); setSelectedTrade(null); setSelectedLesson(null); setActiveQuiz(null); }}>
+                                    <span style={{ fontSize: 18, width: 24, textAlign: "center" }}>{n.icon}</span>
+                                    {sidebarOpen && <span style={{ whiteSpace: "nowrap" }}>{n.label}</span>}
+                                </div>
+                            ))}
+                        </nav>
+                    </div>
+
+                    {/* Main Content Area */}
+                    <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", scrollBehavior: "smooth" }}>
+                        
+                        {/* Header */}
+                        <div className="ios-glass" style={{ padding: "20px 32px", position: "sticky", top: 0, zIndex: 5, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <div style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.5px" }}>
+                                {activeView === "dashboard" && "Dashboard"}
+                                {activeView === "subjects" && (selectedTrade ? (selectedLesson ? selectedLesson.title : TRADES.find(t => t.id === selectedTrade)?.name) : "All Subjects")}
+                                {activeView === "quiz" && (activeQuiz ? activeQuiz.title : "Quizzes")}
+                                {activeView === "progress" && "My Progress"}
+                            </div>
+                            <div style={{ width: 40, height: 40, borderRadius: "20px", background: "rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                👤
+                            </div>
+                        </div>
+
+                        <div style={{ padding: "32px", maxWidth: "1200px", margin: "0 auto", width: "100%" }}>
+
+                            {/* --- DASHBOARD --- */}
+                            {activeView === "dashboard" && (
+                                <div>
+                                    <h2 style={{ fontSize: 20, fontWeight: 600, marginBottom: 20 }}>Trades & Subjects</h2>
+                                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 20 }}>
+                                        {TRADES.map(t => {
+                                            const total = (INITIAL_LESSONS[t.id] || []).length;
+                                            const done = (INITIAL_LESSONS[t.id] || []).filter(l => progress[`${t.id}_${l.id}`]).length;
+                                            const pct = total ? Math.round((done / total) * 100) : 0;
+                                            return (
+                                                <div key={t.id} className="ios-card" style={{ padding: 24, cursor: "pointer" }} onClick={() => { setSelectedTrade(t.id); setActiveView("subjects"); }}>
+                                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
+                                                        <div style={{ fontSize: 36 }}>{t.icon}</div>
+                                                        <div style={{ width: 40, height: 40, borderRadius: "20px", background: "rgba(255,255,255,0.05)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--apple-subtext)" }}>›</div>
+                                                    </div>
+                                                    <div style={{ fontSize: 22, fontWeight: 600, marginBottom: 6 }}>{t.name}</div>
+                                                    <div style={{ fontSize: 14, color: "var(--apple-subtext)", marginBottom: 20 }}>{total} Lessons Available</div>
+                                                    
+                                                    <div className="progress-bar-wrap">
+                                                        <div className="progress-bar-fill" style={{ width: `${pct}%`, background: t.color }} />
+                                                    </div>
+                                                    <div style={{ fontSize: 12, color: "var(--apple-subtext)", marginTop: 8, textAlign: "right" }}>{pct}% Complete</div>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* --- SUBJECTS & LESSONS --- */}
+                            {activeView === "subjects" && selectedTrade && !selectedLesson && (
+                                <div>
+                                    <button className="ios-btn-secondary" style={{ marginBottom: 24 }} onClick={() => setSelectedTrade(null)}>‹ Back</button>
+                                    <div style={{ display: "grid", gap: 16 }}>
+                                        {(INITIAL_LESSONS[selectedTrade] || []).map(l => {
+                                            const done = progress[`${selectedTrade}_${l.id}`];
+                                            return (
+                                                <div key={l.id} className="lesson-item" onClick={() => setSelectedLesson({ ...l, trade: selectedTrade })}>
+                                                    <div style={{ width: 48, height: 48, borderRadius: "14px", background: "rgba(255,255,255,0.05)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>
+                                                        {l.type === 'video' ? '▶️' : '📄'}
+                                                    </div>
+                                                    <div style={{ flex: 1 }}>
+                                                        <div style={{ fontSize: 17, fontWeight: 600, color: done ? "var(--apple-green)" : "#fff" }}>{l.title} {done && "✓"}</div>
+                                                        <div style={{ fontSize: 14, color: "var(--apple-subtext)", marginTop: 4 }}>{l.duration} • {l.type.toUpperCase()}</div>
+                                                    </div>
+                                                </div>
+                                            )
+                                        })}
+                                        {!(INITIAL_LESSONS[selectedTrade] || []).length && <p style={{ color: "var(--apple-subtext)" }}>No lessons uploaded yet.</p>}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* --- LESSON VIEWER --- */}
+                            {activeView === "subjects" && selectedLesson && (
+                                <div>
+                                    <button className="ios-btn-secondary" style={{ marginBottom: 24 }} onClick={() => setSelectedLesson(null)}>‹ Back to Lessons</button>
+                                    <div className="ios-card" style={{ overflow: "hidden", marginBottom: 24 }}>
+                                        {selectedLesson.type === "video" && (
+                                            <iframe src={selectedLesson.content} style={{ width: "100%", height: "50vh", minHeight: 300, border: "none" }} allowFullScreen />
+                                        )}
+                                        {selectedLesson.type === "pdf" && (
+                                            <iframe src={selectedLesson.content} style={{ width: "100%", height: "60vh", border: "none" }} />
+                                        )}
+                                    </div>
+                                    <div className="ios-card" style={{ padding: 24 }}>
+                                        <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 8 }}>{selectedLesson.title}</h2>
+                                        <p style={{ fontSize: 16, color: "var(--apple-subtext)", lineHeight: 1.5, marginBottom: 24 }}>{selectedLesson.description}</p>
+                                        
+                                        {!progress[`${selectedLesson.trade}_${selectedLesson.id}`] ? (
+                                            <button className="ios-btn-primary" style={{ width: "100%" }} onClick={() => markComplete(selectedLesson.trade, selectedLesson.id)}>Mark as Complete</button>
+                                        ) : (
+                                            <div style={{ background: "rgba(50, 215, 75, 0.15)", color: "var(--apple-green)", padding: 16, borderRadius: 14, textAlign: "center", fontWeight: 600 }}>
+                                                ✓ Lesson Completed
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* --- QUIZZES --- */}
+                            {activeView === "quiz" && !activeQuiz && (
+                                <div style={{ display: "grid", gap: 16 }}>
+                                    {TRADES.map(t => (QUIZZES[t.id] || []).map(q => (
+                                        <div key={q.id} className="ios-card" style={{ padding: 24, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                            <div>
+                                                <div style={{ fontSize: 18, fontWeight: 600 }}>{q.title}</div>
+                                                <div style={{ fontSize: 14, color: "var(--apple-subtext)", marginTop: 6 }}>{q.questions.length} Questions • {t.name}</div>
+                                            </div>
+                                            <button className="ios-btn-primary" onClick={() => startQuiz(q)}>Start Quiz</button>
+                                        </div>
+                                    )))}
+                                </div>
+                            )}
+
+                            {activeView === "quiz" && activeQuiz && !quizResult && quizState && (
+                                <div className="ios-card" style={{ padding: 32, maxWidth: 800, margin: "0 auto" }}>
+                                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 24 }}>
+                                        <span style={{ color: "var(--apple-subtext)" }}>Question {quizState.currentQ + 1} of {activeQuiz.questions.length}</span>
+                                        <span style={{ color: quizState.timeLeft < 60 ? "var(--apple-red)" : "var(--apple-accent)", fontWeight: 700, fontSize: 18 }}>{formatTime(quizState.timeLeft)}</span>
+                                    </div>
+                                    
+                                    <h3 style={{ fontSize: 22, fontWeight: 600, marginBottom: 32, lineHeight: 1.4 }}>
+                                        {activeQuiz.questions[quizState.currentQ].q}
+                                    </h3>
+
+                                    <div style={{ display: "grid", gap: 12, marginBottom: 32 }}>
+                                        {activeQuiz.questions[quizState.currentQ].options.map((opt, i) => (
+                                            <div key={i} 
+                                                 className={`quiz-option ${quizState.answers[quizState.currentQ] === i ? "selected" : ""}`} 
+                                                 onClick={() => answerQuestion(i)}>
+                                                {opt}
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <button className="ios-btn-primary" style={{ width: "100%" }} 
+                                            disabled={quizState.answers[quizState.currentQ] === null} 
+                                            onClick={nextQuestion}>
+                                        {quizState.currentQ === activeQuiz.questions.length - 1 ? "Submit Quiz" : "Next Question"}
+                                    </button>
+                                </div>
+                            )}
+
+                            {activeView === "quiz" && quizResult && (
+                                <div className="ios-card" style={{ padding: 40, textAlign: "center", maxWidth: 600, margin: "0 auto" }}>
+                                    <div style={{ fontSize: 64, marginBottom: 16 }}>
+                                        {quizResult.percentage >= 80 ? "🏆" : quizResult.percentage >= 50 ? "✅" : "📚"}
+                                    </div>
+                                    <div style={{ fontSize: 72, fontWeight: 800, letterSpacing: "-2px", color: quizResult.percentage >= 50 ? "var(--apple-green)" : "var(--apple-red)", marginBottom: 8 }}>
+                                        {quizResult.percentage}%
+                                    </div>
+                                    <p style={{ fontSize: 18, color: "var(--apple-subtext)", marginBottom: 32 }}>
+                                        You got {quizResult.correct} out of {quizResult.total} questions correct.
+                                    </p>
+                                    <button className="ios-btn-secondary" style={{ width: "100%" }} onClick={() => { setActiveQuiz(null); setQuizResult(null); }}>
+                                        Back to Quizzes
+                                    </button>
+                                </div>
+                            )}
+
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
