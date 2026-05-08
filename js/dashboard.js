@@ -92,12 +92,12 @@ async function renderDashboard() {
       ${topics.map(t => {
         const completed = userData.progress && userData.progress[t.id] === true;
         const displayTitle = lang ? (t.titleHi || t.title || 'Topic') : (t.title || 'Topic');
-        return \`
-        <div class="card topic-card" onclick="openTopicLessons('\${t.id}')" style="cursor:pointer;display:flex;flex-direction:column;align-items:center;text-align:center;padding:16px 12px;gap:10px;transition:all 0.2s;border:2px solid transparent;">
-          <div class="card-icon \${t.color || 'blue'}" style="font-size:1.4rem;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:12px;"><i class="fas \${t.icon || 'fa-book'}"></i></div>
-          <h4 style="font-size:.85rem;font-weight:600;line-height:1.3;margin:0;">\${displayTitle}</h4>
-          \${completed ? \`<span style="font-size:.65rem;background:var(--success);color:#fff;padding:2px 6px;border-radius:4px;font-weight:600;"><i class="fas fa-check"></i> \${lang?'पूर्ण':'Done'}</span>\` : ''}
-        </div>\`;
+        return `
+        <div class="card topic-card" onclick="openTopicLessons('${t.id}')" style="cursor:pointer;display:flex;flex-direction:column;align-items:center;text-align:center;padding:16px 12px;gap:10px;transition:all 0.2s;border:2px solid transparent;">
+          <div class="card-icon ${t.color || 'blue'}" style="font-size:1.4rem;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:12px;"><i class="fas ${t.icon || 'fa-book'}"></i></div>
+          <h4 style="font-size:.85rem;font-weight:600;line-height:1.3;margin:0;">${displayTitle}</h4>
+          ${completed ? `<span style="font-size:.65rem;background:var(--success);color:#fff;padding:2px 6px;border-radius:4px;font-weight:600;"><i class="fas fa-check"></i> ${lang?'पूर्ण':'Done'}</span>` : ''}
+        </div>`;
       }).join('')}
     </div>
 
