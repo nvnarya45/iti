@@ -1,5 +1,5 @@
 // ===== Main App Module =====
-let currentView = 'dashboard';
+let currentView = 'home';
 
 // Auth state observer
 auth.onAuthStateChanged(async (user) => {
@@ -30,7 +30,8 @@ auth.onAuthStateChanged(async (user) => {
     }
     const savedLang = localStorage.getItem('iti-lang');
     if (savedLang === 'hi') document.getElementById('lang-toggle').checked = true;
-    navigateTo('dashboard');
+    // Default view is HOME (simple lesson list for students)
+    navigateTo('home');
   } else {
     document.getElementById('auth-screen').style.display = 'flex';
     document.getElementById('app-screen').style.display = 'none';
@@ -50,6 +51,7 @@ function navigateTo(view) {
   });
   // Update topbar title
   const titles = {
+    home: 'ITI Vidhya',
     dashboard: lang ? 'डैशबोर्ड' : 'Dashboard',
     subjects: lang ? 'विषय' : 'Subjects',
     lessons: lang ? 'पाठ' : 'Lessons',
@@ -58,7 +60,7 @@ function navigateTo(view) {
     'quiz-play': lang ? 'क्विज़' : 'Quiz',
     'quiz-result': lang ? 'परिणाम' : 'Result',
     progress: lang ? 'प्रगति' : 'Progress',
-    admin: lang ? 'एडमिन' : 'Admin Panel',
+    admin: lang ? 'एडमिन पैनल' : 'Admin Panel',
     search: lang ? 'खोज' : 'Search',
     certificate: lang ? 'प्रमाणपत्र' : 'Certificate',
     profile: lang ? 'प्रोफ़ाइल' : 'My Profile',
@@ -66,9 +68,10 @@ function navigateTo(view) {
   document.getElementById('topbar-title').textContent = titles[view] || 'ITI Vidhya';
   // Render view
   switch(view) {
+    case 'home': renderHome(); break;
     case 'dashboard': renderDashboard(); break;
     case 'subjects': renderSubjects(); break;
-    case 'lessons': renderLessons(); break;
+    case 'lessons': renderSubjectLessons(); break;
     case 'quiz': renderQuizList(); break;
     case 'progress': renderProgress(); break;
     case 'admin': renderAdmin(); break;
