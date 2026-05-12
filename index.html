@@ -130,14 +130,14 @@
         <button class="sidebar-close" onclick="toggleSidebar()"><i class="fas fa-times"></i></button>
       </div>
       <div class="sidebar-menu">
-        <a href="#" class="sidebar-item active" data-view="dashboard" onclick="navigateTo('dashboard')">
-          <i class="fas fa-th-large"></i><span>Dashboard</span>
+        <a href="#" class="sidebar-item active" data-view="home" onclick="navigateTo('home')">
+          <i class="fas fa-home"></i><span>Home</span>
         </a>
         <a href="#" class="sidebar-item" data-view="subjects" onclick="navigateTo('subjects')">
           <i class="fas fa-book-open"></i><span>Subjects</span>
         </a>
-        <a href="#" class="sidebar-item" data-view="lessons" onclick="navigateTo('lessons')">
-          <i class="fas fa-graduation-cap"></i><span>Lessons</span>
+        <a href="#" class="sidebar-item" data-view="dashboard" onclick="navigateTo('dashboard')">
+          <i class="fas fa-th-large"></i><span>Dashboard</span>
         </a>
         <a href="#" class="sidebar-item" data-view="quiz" onclick="navigateTo('quiz')">
           <i class="fas fa-clipboard-check"></i><span>Quiz</span>
@@ -149,7 +149,7 @@
           <i class="fas fa-user-circle"></i><span>My Profile</span>
         </a>
         <a href="#" class="sidebar-item" data-view="admin" onclick="navigateTo('admin')" id="admin-menu-item" style="display:none;">
-          <i class="fas fa-upload"></i><span>Admin Panel</span>
+          <i class="fas fa-shield-alt"></i><span>Admin Panel</span>
         </a>
         <div class="sidebar-divider"></div>
         <div class="sidebar-item theme-toggle-row">
@@ -176,7 +176,7 @@
     <!-- Top Bar -->
     <header class="topbar">
       <button class="topbar-menu" onclick="toggleSidebar()" id="topbar-menu-btn"><i class="fas fa-bars"></i></button>
-      <h2 class="topbar-title" id="topbar-title">Dashboard</h2>
+      <h2 class="topbar-title" id="topbar-title">ITI Vidhya</h2>
       <div class="topbar-actions">
         <button class="topbar-btn" onclick="navigateTo('search')" id="topbar-search-btn"><i class="fas fa-search"></i></button>
         <div class="topbar-avatar" id="topbar-avatar" onclick="toggleSidebar()">S</div>
@@ -185,11 +185,13 @@
 
     <!-- Content Area -->
     <main class="content" id="main-content">
+      <!-- HOME VIEW (Simple Lesson Browser) -->
+      <section id="view-home" class="view active-view"></section>
       <!-- DASHBOARD VIEW -->
-      <section id="view-dashboard" class="view active-view"></section>
+      <section id="view-dashboard" class="view"></section>
       <!-- SUBJECTS VIEW -->
       <section id="view-subjects" class="view"></section>
-      <!-- LESSONS VIEW -->
+      <!-- LESSONS VIEW (Subject-specific lessons) -->
       <section id="view-lessons" class="view"></section>
       <!-- LESSON DETAIL VIEW -->
       <section id="view-lesson-detail" class="view"></section>
@@ -227,8 +229,9 @@
   <!-- App Scripts -->
   <script src="js/firebase-config.js"></script>
   <script src="js/auth.js"></script>
-  <script src="js/dashboard.js"></script>
+  <script src="js/data.js"></script>
   <script src="js/courses.js"></script>
+  <script src="js/dashboard.js"></script>
   <script src="js/quiz.js"></script>
   <script src="js/admin.js"></script>
   <script src="js/progress.js"></script>
