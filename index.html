@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="ITI Vidhya - Learn Electrician Trade concepts with MCQ quizzes, study notes, and real-time progress tracking">
+  <meta name="theme-color" content="#1B2A4A">
+  <link rel="icon" type="image/png" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="ITI Vidhya">
+  <meta name="apple-mobile-web-app-title" content="ITI Vidhya">
+  <meta property="og:title" content="ITI Vidhya - Learn Electrician Trade">
+  <meta property="og:description" content="Learn Electrician Trade concepts with MCQ quizzes, study notes, and real-time progress tracking">
+  <meta property="og:type" content="website">
+  <title>ITI Vidhya - Learn Electrician Trade</title>
+  <link rel="manifest" href="manifest.json">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Splash Screen -->
+  <div id="splash-screen" class="splash">
+    <div class="splash-content">
+      <div class="splash-icon"><img src="icons/icon-512.png" alt="ITI Vidhya" style="width:80px;height:80px;border-radius:18px;"></div>
+      <h1>ITI Vidhya</h1>
+      <p>Learn. Practice. Succeed.</p>
+      <div class="splash-loader"><div class="loader-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- Auth Screen -->
+  <div id="auth-screen" class="screen" style="display:none;">
+    <div class="auth-container">
+      <div class="auth-header">
+        <div class="auth-logo"><img src="icons/icon-512.png" alt="ITI Vidhya" style="width:64px;height:64px;border-radius:14px;"></div>
+        <h1>ITI Vidhya</h1>
+        <p id="auth-subtitle">Welcome back! Sign in to continue</p>
+      </div>
+      <!-- Login Form -->
+      <form id="login-form" class="auth-form">
+        <div class="input-group">
+          <i class="fas fa-envelope"></i>
+          <input type="email" id="login-email" placeholder="Email Address" required autocomplete="email">
+        </div>
+        <div class="input-group">
+          <i class="fas fa-lock"></i>
+          <input type="password" id="login-password" placeholder="Password" required autocomplete="current-password">
+          <button type="button" class="toggle-pass" onclick="togglePassword('login-password',this)"><i class="fas fa-eye"></i></button>
+        </div>
+        <div class="auth-links">
+          <a href="#" onclick="showAuthView('forgot-password')">Forgot Password?</a>
+          <a href="#" onclick="showAuthView('forgot-username')">Forgot Username?</a>
+        </div>
+        <button type="submit" class="btn-primary" id="login-btn">
+          <span>Sign In</span><i class="fas fa-arrow-right"></i>
+        </button>
+        <div class="auth-divider">
+          <span>or</span>
+        </div>
+        <button type="button" class="btn-phone-login" onclick="showAuthView('phone-login')">
+          <i class="fas fa-mobile-alt"></i>
+          <span>Login with Mobile Number</span>
+        </button>
+        <p class="auth-switch">Don't have an account? <a href="#" onclick="showAuthView('register')">Register</a></p>
+      </form>
+
+      <!-- Register Form -->
+      <form id="register-form" class="auth-form" style="display:none;">
+        <div class="input-group">
+          <i class="fas fa-user"></i>
+          <input type="text" id="reg-name" placeholder="Full Name" required>
+        </div>
+        <div class="input-group">
+          <i class="fas fa-at"></i>
+          <input type="text" id="reg-username" placeholder="Username" required>
+        </div>
+        <div class="input-group">
+          <i class="fas fa-envelope"></i>
+          <input type="email" id="reg-email" placeholder="Email Address" required>
+        </div>
+        <div class="input-group">
+          <i class="fas fa-mobile-alt"></i>
+          <input type="tel" id="reg-phone" placeholder="Mobile Number (e.g. 9876543210)" maxlength="13" autocomplete="tel">
+        </div>
+        <div class="input-group">
+          <i class="fas fa-lock"></i>
+          <input type="password" id="reg-password" placeholder="Password (min 6 chars)" required minlength="6">
+          <button type="button" class="toggle-pass" onclick="togglePassword('reg-password',this)"><i class="fas fa-eye"></i></button>
+        </div>
+        <div class="input-group">
+          <i class="fas fa-lock"></i>
+          <input type="password" id="reg-confirm" placeholder="Confirm Password" required minlength="6">
+        </div>
+        <div class="input-group">
+          <i class="fas fa-tools"></i>
+          <select id="reg-trade" required>
+            <option value="">Select Trade</option>
+            <option value="electrician" selected>Electrician</option>
+            <option value="fitter">Fitter</option>
+            <option value="turner">Turner</option>
+            <option value="welder">Welder</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-primary" id="reg-btn">
+          <span>Create Account</span><i class="fas fa-user-plus"></i>
+        </button>
+        <p class="auth-switch">Already have an account? <a href="#" onclick="showAuthView('login')">Sign In</a></p>
+      </form>
+
+      <!-- Phone Login Form -->
+      <form id="phone-login-form" class="auth-form" style="display:none;">
+        <div class="phone-login-illustration">
+          <i class="fas fa-mobile-alt"></i>
+        </div>
+        <p class="phone-login-desc">Enter your registered mobile number. We'll send a 6-digit OTP for verification.</p>
+        <div class="input-group">
+          <i class="fas fa-phone"></i>
+          <span class="phone-prefix">+91</span>
+          <input type="tel" id="phone-login-number" placeholder="10-digit mobile number" maxlength="10" required pattern="[6-9][0-9]{9}">
+        </div>
+        <button type="submit" class="btn-primary">
+          <span>Send OTP</span><i class="fas fa-paper-plane"></i>
+        </button>
+        <p class="auth-switch"><a href="#" onclick="showAuthView('login')"><i class="fas fa-arrow-left"></i> Login with Email</a></p>
+      </form>
+
+      <!-- OTP Verification Form -->
+      <form id="otp-verify-form" class="auth-form" style="display:none;">
+        <div class="otp-illustration">
+          <i class="fas fa-shield-alt"></i>
+        </div>
+        <p class="otp-desc">OTP sent to <strong id="otp-phone-display">+91XXXXXXXXXX</strong></p>
+        <div class="otp-inputs">
+          <input type="text" id="otp-1" class="otp-box" maxlength="1" inputmode="numeric" pattern="[0-9]" 
+            oninput="handleOtpInput(this,'otp-2')" onkeydown="handleOtpKeydown(event,null)" onpaste="handleOtpPaste(event)" autofocus>
+          <input type="text" id="otp-2" class="otp-box" maxlength="1" inputmode="numeric" pattern="[0-9]"
+            oninput="handleOtpInput(this,'otp-3')" onkeydown="handleOtpKeydown(event,'otp-1')">
+          <input type="text" id="otp-3" class="otp-box" maxlength="1" inputmode="numeric" pattern="[0-9]"
+            oninput="handleOtpInput(this,'otp-4')" onkeydown="handleOtpKeydown(event,'otp-2')">
+          <input type="text" id="otp-4" class="otp-box" maxlength="1" inputmode="numeric" pattern="[0-9]"
+            oninput="handleOtpInput(this,'otp-5')" onkeydown="handleOtpKeydown(event,'otp-3')">
+          <input type="text" id="otp-5" class="otp-box" maxlength="1" inputmode="numeric" pattern="[0-9]"
+            oninput="handleOtpInput(this,'otp-6')" onkeydown="handleOtpKeydown(event,'otp-4')">
+          <input type="text" id="otp-6" class="otp-box" maxlength="1" inputmode="numeric" pattern="[0-9]"
+            oninput="handleOtpInput(this,null)" onkeydown="handleOtpKeydown(event,'otp-5')">
+        </div>
+        <p id="otp-timer" class="otp-timer">Resend OTP in 60s</p>
+        <button type="button" id="otp-resend-btn" class="btn-link" style="display:none;" onclick="resendOTP()">
+          <i class="fas fa-redo"></i> Resend OTP
+        </button>
+        <button type="submit" class="btn-primary">
+          <span>Verify OTP</span><i class="fas fa-check"></i>
+        </button>
+        <p class="auth-switch"><a href="#" onclick="showAuthView('phone-login')"><i class="fas fa-arrow-left"></i> Change Number</a></p>
+      </form>
+
+      <!-- Email Verification Form -->
+      <div id="email-verify-form" class="auth-form" style="display:none;">
+        <div class="email-verify-illustration">
+          <i class="fas fa-envelope-open-text"></i>
+        </div>
+        <h3 class="email-verify-title">Verify Your Email</h3>
+        <p class="email-verify-desc">We've sent a verification link to:</p>
+        <p class="email-verify-address" id="verify-email-display">email@example.com</p>
+        <p class="email-verify-desc">Click the link in the email to verify your account, then click the button below.</p>
+        <button type="button" class="btn-primary" onclick="checkEmailVerified()">
+          <i class="fas fa-check-circle"></i>
+          <span>I've Verified My Email</span>
+        </button>
+        <button type="button" class="btn-secondary" style="width:100%;margin-top:10px;padding:12px;display:flex;align-items:center;justify-content:center;gap:6px;font-weight:600;" onclick="resendVerificationEmail()">
+          <i class="fas fa-redo"></i>
+          <span>Resend Verification Email</span>
+        </button>
+        <p class="auth-switch" style="margin-top:14px;">
+          <a href="#" onclick="logoutFromVerification()"><i class="fas fa-arrow-left"></i> Back to Login</a>
+        </p>
+      </div>
+
+      <!-- Forgot Password Form -->
+      <form id="forgot-password-form" class="auth-form" style="display:none;">
+        <div class="input-group">
+          <i class="fas fa-envelope"></i>
+          <input type="email" id="forgot-email" placeholder="Enter your email" required>
+        </div>
+        <button type="submit" class="btn-primary">
+          <span>Send Reset Link</span><i class="fas fa-paper-plane"></i>
+        </button>
+        <p class="auth-switch"><a href="#" onclick="showAuthView('login')"><i class="fas fa-arrow-left"></i> Back to Login</a></p>
+      </form>
+      <!-- Forgot Username Form -->
+      <form id="forgot-username-form" class="auth-form" style="display:none;">
+        <div class="input-group">
+          <i class="fas fa-envelope"></i>
+          <input type="email" id="forgot-user-email" placeholder="Enter your registered email" required>
+        </div>
+        <button type="submit" class="btn-primary">
+          <span>Recover Username</span><i class="fas fa-search"></i>
+        </button>
+        <p class="auth-switch"><a href="#" onclick="showAuthView('login')"><i class="fas fa-arrow-left"></i> Back to Login</a></p>
+      </form>
+    </div>
+    <!-- reCAPTCHA container for phone auth -->
+    <div id="recaptcha-container"></div>
+  </div>
+
+  <!-- Main App -->
+  <div id="app-screen" class="screen" style="display:none;">
+    <!-- Sidebar Overlay -->
+    <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <!-- Sidebar -->
+    <nav id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-avatar" id="sidebar-avatar" onclick="navigateTo('profile')" style="cursor:pointer;overflow:hidden;"><img id="sidebar-avatar-img" src="" style="width:100%;height:100%;object-fit:cover;display:none;"><span id="sidebar-avatar-letter">S</span></div>
+        <div class="sidebar-user-info" onclick="navigateTo('profile')" style="cursor:pointer;">
+          <h3 id="sidebar-username">Student</h3>
+          <p id="sidebar-email">student@iti.com</p>
+          <p id="sidebar-trade" style="font-size:.68rem;color:var(--accent);font-weight:600;margin-top:1px;"></p>
+        </div>
+        <button class="sidebar-close" onclick="toggleSidebar()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="sidebar-menu">
+        <a href="#" class="sidebar-item active" data-view="home" onclick="navigateTo('home')">
+          <i class="fas fa-home"></i><span>Home</span>
+        </a>
+        <a href="#" class="sidebar-item" data-view="subjects" onclick="navigateTo('subjects')">
+          <i class="fas fa-book-open"></i><span>Subjects</span>
+        </a>
+        <a href="#" class="sidebar-item" data-view="dashboard" onclick="navigateTo('dashboard')">
+          <i class="fas fa-th-large"></i><span>Dashboard</span>
+        </a>
+        <a href="#" class="sidebar-item" data-view="daily-practice" onclick="navigateTo('daily-practice')">
+          <i class="fas fa-fire"></i><span>Daily Practice</span>
+        </a>
+        <a href="#" class="sidebar-item" data-view="bookmarks" onclick="navigateTo('bookmarks')">
+          <i class="fas fa-bookmark"></i><span>Bookmarks</span>
+        </a>
+        <a href="#" class="sidebar-item" data-view="progress" onclick="navigateTo('progress')">
+          <i class="fas fa-chart-line"></i><span>Progress</span>
+        </a>
+        <a href="#" class="sidebar-item" data-view="profile" onclick="navigateTo('profile')">
+          <i class="fas fa-user-circle"></i><span>My Profile</span>
+        </a>
+        <a href="#" class="sidebar-item" data-view="admin" onclick="navigateTo('admin')" id="admin-menu-item" style="display:none;">
+          <i class="fas fa-shield-alt"></i><span>Admin Panel</span>
+        </a>
+        <a href="javascript:void(0)" class="sidebar-item" data-view="contact" onclick="navigateTo('contact')">
+          <i class="fas fa-headset"></i><span>Contact Us</span>
+        </a>
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-item theme-toggle-row">
+          <i class="fas fa-moon"></i><span>Dark Mode</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="theme-toggle" onchange="toggleTheme()">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="sidebar-item lang-toggle-row">
+          <i class="fas fa-language"></i><span>हिंदी</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="lang-toggle" onchange="toggleLanguage()">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="sidebar-divider"></div>
+        <a href="#" class="sidebar-item logout-item" onclick="logoutUser()">
+          <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+        </a>
+      </div>
+    </nav>
+
+    <!-- Top Bar -->
+    <header class="topbar">
+      <button class="topbar-menu" onclick="toggleSidebar()" id="topbar-menu-btn"><i class="fas fa-bars"></i></button>
+      <h2 class="topbar-title" id="topbar-title">ITI Vidhya</h2>
+      <div class="topbar-actions">
+        <button class="topbar-btn" onclick="navigateTo('search')" id="topbar-search-btn"><i class="fas fa-search"></i></button>
+        <div class="topbar-avatar" id="topbar-avatar" onclick="toggleSidebar()">S</div>
+      </div>
+    </header>
+
+    <!-- Content Area -->
+    <main class="content" id="main-content">
+      <section id="view-home" class="view active-view"></section>
+      <section id="view-dashboard" class="view"></section>
+      <section id="view-subjects" class="view"></section>
+      <section id="view-lessons" class="view"></section>
+      <section id="view-lesson-detail" class="view"></section>
+      <section id="view-mcq-play" class="view"></section>
+      <section id="view-mcq-result" class="view"></section>
+      <section id="view-quiz" class="view"></section>
+      <section id="view-quiz-play" class="view"></section>
+      <section id="view-quiz-result" class="view"></section>
+      <section id="view-daily-practice" class="view"></section>
+      <section id="view-random-quiz" class="view"></section>
+      <section id="view-bookmarks" class="view"></section>
+      <section id="view-progress" class="view"></section>
+      <section id="view-admin" class="view"></section>
+      <section id="view-search" class="view"></section>
+      <section id="view-certificate" class="view"></section>
+      <section id="view-profile" class="view"></section>
+      <section id="view-contact" class="view"></section>
+    </main>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast"><span id="toast-msg"></span></div>
+  <!-- Loading Overlay -->
+  <div id="loading-overlay" class="loading-overlay" style="display:none;">
+    <div class="spinner"></div>
+  </div>
+  <!-- Confirmation Modal -->
+  <div id="confirm-modal" class="confirm-modal" style="display:none;">
+    <div class="confirm-modal-content">
+      <div class="confirm-modal-icon"><i class="fas fa-exclamation-triangle"></i></div>
+      <h3 id="confirm-modal-title">Confirm</h3>
+      <p id="confirm-modal-msg">Are you sure?</p>
+      <div class="confirm-modal-actions">
+        <button class="btn-secondary" id="confirm-cancel-btn">Cancel</button>
+        <button class="btn-danger" id="confirm-ok-btn">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
+  <!-- PDF via browser print (supports Hindi/Unicode natively) -->
+  <!-- App Scripts -->
+  <script src="js/firebase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/courses.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/mcq.js"></script>
+  <script src="js/quiz.js"></script>
+  <script src="js/admin.js"></script>
+  <script src="js/progress.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/profile.js"></script>
+  <script src="js/realtime.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

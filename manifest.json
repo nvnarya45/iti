@@ -1,0 +1,17 @@
+{
+  "name": "ITI Vidhya",
+  "short_name": "ITI Vidhya",
+  "description": "Learn Electrician Trade - Videos, Notes & Quizzes for ITI Students",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#1B2A4A",
+  "lang": "en",
+  "categories": ["education"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
